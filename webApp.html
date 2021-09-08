@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+* {
+  box-sizing: border-box;
+  text-align: center;
+}
+.menu {
+  float: left;
+  width: 20%;
+}
+.menuitem {
+  padding: 8px;
+  margin-top: 7px;
+  border-bottom: 1px solid #f1f1f1;
+}
+.main {
+  float: left;
+  width: 60%;
+  padding: 0 20px;
+  overflow: hidden;
+}
+.right {
+  background-color: #222629;
+  float: left;
+  width: 20%;
+  padding: 10px 15px;
+  margin-top: 7px;
+}
+.button {
+  background-color: white;;
+  border: 2px solid #555555;
+  color: black;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+@media only screen and (max-width:800px) {
+  /* For tablets: */
+  .main {
+    width: 80%;
+    padding: 0;
+  }
+  .right {
+    width: 100%;
+  }
+}
+@media only screen and (max-width:500px) {
+  /* For mobile phones: */
+  .menu, .main, .right {
+    width: 100%;
+  }
+}
+</style>
+</head>
+
+<body style="font-family:'Helvetica Neue',sans-serif;font-weight:bold;color:#e1e1e1;background-color:#222629">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+<div style="font-family:'Helvetica Neue',sans-serif;font-weight:bold;background-color:#222629;color:#e1e1e1;padding:15px;">
+  <h1>Bitcoin Explorer</h1>
+  <h3>Web Application</h3>
+</div>
+
+<div style="overflow:auto">
+  <div class="menu">
+    <div class="menuitem">Lorem</div>
+    <div class="menuitem">Ipsum</div>
+    <div class="menuitem">Dolor</div>
+    <div class="menuitem">Sit</div>
+  </div>
+
+  <div class="main">
+    <h2>Explore</h2>
+    <div ng-app="myApp" ng-controller="myCtrl"> 
+      <button class="button" ng-click="getMaxHeight()">Get Current Highest Height</button>
+      <p>{{maxHeight}}</p>
+      <input ng-model="height">
+      <button class="button" ng-click="getHash()">Enter Height</button>
+      <p>{{hash + errortext}}</p>
+
+      <button class="button" ng-init="counter = 9" ng-click="getBlocks()">Load Bitcoin's Blocks </button>
+      <div  style="overflow-x:auto;">
+      <table cellpadding="10" cellspacing="10" ng-if="counter > 9">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>HEIGHT</th>
+                <th>DIFFICULTY</th>
+                <th>TIMESTAMP</th>
+                <th>MERKLE ROOT</th>
+            </tr>
+        </thead>
+        <tr ng-repeat="block in block">
+            <td> {{block.id}} </td>
+            <td> {{block.height}} </td>
+            <td> {{block.difficulty}} </td>
+            <td> {{block.timestamp}} </td>
+            <td> {{block.merkle_root}} </td>
+        </tr>
+      </table>
+    </div>
+      </div>
+  </div>
+
+  <div class="right">
+    <h2>Amet?</h2>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+    <h2>Consectetur?</h2>
+    <p>Ut enim ad minim veniam.</p>
+    <h2>Adipiscing?</h2>
+    <p>Excepteur sint occaecat cupidatat non proident.</p>
+  </div>
+</div>
+
+<div style="font-family:'Helvetica Neue',sans-serif;font-weight:bold;background-color:#222629;color:#e1e1e1;text-align:center;padding:10px;margin-top:7px;font-size:12px;"> Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</div>
+<script>
+  var app = angular.module('myApp', []);
+  app.controller('myCtrl', function($scope, $http) {
+    /* Gets the max height of blockchain*/
+    $scope.getMaxHeight = function() {
+      url = 'https://blockstream.info/api/blocks/tip/height';
+      $http.get(url).then(function (response) {
+          $scope.maxHeight = response.data;
+      });
+    }
+    /* Gets the hash for a given input block height */
+    $scope.getHash = function() {
+      /* Initialization to empty strings */
+      $scope.errortext = "";
+      $scope.hash = "";
+      /* Get current max height */
+      url = 'https://blockstream.info/api/blocks/tip/height';
+      $http.get(url).then(function (response) {
+        $scope.curHeight = response.data;
+      });
+      $scope.heightToInt = parseInt($scope.height, 10);
+      $scope.curHeightToInt = parseInt($scope.curHeight, 10);
+      /* Checks if user did not give any input */
+      if (!$scope.height) {return;}
+      /* Checks if user's input is not a number */
+      else if (isNaN($scope.height)) {
+        $scope.errortext = "Please enter a height.";
+      }
+      /* Checks if user's input is smaller than 0 */
+      else if ($scope.heightToInt < 0) {
+        $scope.errortext = "Please enter a bigger height."
+      }
+      /* Checks if user's input is bigger than  current max height */
+      else if ($scope.heightToInt > $scope.curHeightToInt) {
+        $scope.errortext = "Current maximum height is " + $scope.curHeight;
+        $scope.errortext += ". Please enter a smaller height."
+        /* Calculates the hash of the given input */
+      } else {
+        url = 'https://blockstream.info/api/block-height/' + $scope.height;
+        $http.get(url).then(function (response) {
+          $scope.hash = response.data;
+        });
+      }
+    }
+    /* Displays informations about 10 blocks */
+    $scope.getBlocks = function() {
+      /* Get current max height */
+      url = 'https://blockstream.info/api/blocks/tip/height';
+      $http.get(url).then(function (response) {
+        $scope.curHeight = response.data;
+      });
+      /* If counter is bigger than the max height, return the newest 10 blocks */
+      if ($scope.counter > $scope.curHeight) {
+        $scope.counter = $scope.curHeight
+      }
+      /* Display the 10 newest blocks from counter */
+      url = 'https://blockstream.info/api/blocks/' + $scope.counter;
+        $http.get(url).then(function (response) {
+          $scope.block = response.data;
+        });
+      $scope.counter += 10;
+    }
+  });
+  </script>
+</body>
+</html>
