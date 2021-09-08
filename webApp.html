@@ -30,7 +30,7 @@
   margin-top: 7px;
 }
 .button {
-  background-color: white;;
+  background-color: #e1e1e1;
   border: 2px solid #555555;
   color: black;
   padding: 15px 32px;
@@ -78,10 +78,10 @@
   <div class="main">
     <h2>Explore</h2>
     <div ng-app="myApp" ng-controller="myCtrl"> 
-      <button class="button" ng-click="getMaxHeight()">Get Current Highest Height</button>
+      <button class="button" ng-click="getMaxHeight()">Get Highest Block Height</button>
       <p>{{maxHeight}}</p>
       <input ng-model="height">
-      <button class="button" ng-click="getHash()">Enter Height</button>
+      <button class="button" ng-click="getHash()">Enter Block Height</button>
       <p>{{hash + errortext}}</p>
 
       <button class="button" ng-init="counter = 9" ng-click="getBlocks()">Load Bitcoin's Blocks </button>
@@ -139,20 +139,20 @@
       $http.get(url).then(function (response) {
         $scope.curHeight = response.data;
       });
-      $scope.heightToInt = parseInt($scope.height, 10);
-      $scope.curHeightToInt = parseInt($scope.curHeight, 10);
+      $scope.heightToNumber = parseFloat($scope.height);
+      $scope.curHeightToNumber = parseFloat($scope.curHeight);
       /* Checks if user did not give any input */
       if (!$scope.height) {return;}
-      /* Checks if user's input is not a number */
-      else if (isNaN($scope.height)) {
-        $scope.errortext = "Please enter a height.";
+      /* Checks if user's input is a number or not an integer */
+      else if (isNaN($scope.height) || !(Number.isInteger($scope.heightToNumber))) {
+        $scope.errortext = "Please enter a block height.";
       }
       /* Checks if user's input is smaller than 0 */
-      else if ($scope.heightToInt < 0) {
+      else if ($scope.heightToNumber < 0) {
         $scope.errortext = "Please enter a bigger height."
       }
       /* Checks if user's input is bigger than  current max height */
-      else if ($scope.heightToInt > $scope.curHeightToInt) {
+      else if ($scope.heightToNumber > $scope.curHeightToNumber) {
         $scope.errortext = "Current maximum height is " + $scope.curHeight;
         $scope.errortext += ". Please enter a smaller height."
         /* Calculates the hash of the given input */
