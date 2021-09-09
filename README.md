@@ -6,7 +6,7 @@ The project is an AngularJS responsive web application. It uses the Blockstream 
 
 ## Development server
 
-Install 'node' and 'npm' dependancies. Run 'sudo npm install -g live-server' for a dev server. Run 'live-server'. Select 'webApp.html' file. The app will automatically reload if you change any of the source file.
+Install `node` and `npm` dependancies. Run `sudo npm install -g live-server` for a dev server. Run `live-server`. Select `webApp.html` file. The app will automatically reload if you change any of the source file.
 
 ## Further Details
 
