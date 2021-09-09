@@ -11,6 +11,7 @@ Install `node` and `npm` dependancies. Run `sudo npm install -g live-server` for
 ## Further Details
 
 This project uses AngularJS version 1.6.9.
+
 The blockstream.info public APIs are available at:
 
 Bitcoin: https://blockstream.info/api/
